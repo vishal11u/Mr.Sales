@@ -1,0 +1,5 @@
+{
+  "name": "Sales Coach AI",
+  "description": "Upload sales call audio to receive a detailed analysis, including a diarized transcript, sentiment graph, and AI-powered coaching feedback to improve sales performance.",
+  "requestFramePermissions": []
+}

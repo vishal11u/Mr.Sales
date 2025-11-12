@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Coach AI</title>
+    
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
+        "recharts": "https://aistudiocdn.com/recharts@^3.4.1"
+      }
+    }
+    </script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'base-100': '#1d232a', // dark bg
+              'base-200': '#2a323c', // slightly lighter dark bg
+              'base-300': '#4a5568', // even lighter for borders/dividers
+              'content-100': '#f3f4f6', // primary text
+              'content-200': '#9ca3af', // secondary text
+              'brand-primary': '#60a5fa', // blue
+              'brand-accent': '#34d399', // green
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+              'fade-in': 'fadeIn 0.6s ease-out forwards',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+            }
+          },
+        },
+        plugins: [
+          function({ addBase, theme }) {
+            addBase({
+              '.btn': { 
+                padding: '.5rem 1rem', 
+                borderRadius: '.5rem', 
+                fontWeight: '600',
+                transition: 'background-color 0.2s',
+              },
+              '.btn-primary': {
+                backgroundColor: theme('colors.brand-primary'),
+                color: '#ffffff',
+                '&:hover': {
+                  backgroundColor: '#3b82f6',
+                },
+              },
+              '.btn-outline': {
+                  backgroundColor: 'transparent',
+                  border: `1px solid ${theme('colors.base-300')}`,
+                  color: theme('colors.content-200'),
+                  '&:hover': {
+                      backgroundColor: theme('colors.base-300'),
+                      color: theme('colors.content-100'),
+                  }
+              },
+              '.btn-sm': {
+                  padding: '.25rem .75rem',
+                  fontSize: '.875rem',
+              }
+            });
+          }
+        ],
+      }
+    </script>
+
+    <style>
+      body {
+        background-color: #1d232a;
+        background-image: radial-gradient(circle at top left, rgba(96, 165, 250, 0.1), transparent 40%),
+                          radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.1), transparent 40%);
+      }
+      /* Custom scrollbar for better aesthetics in dark mode */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #2a323c;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #60a5fa;
+      }
+    </style>
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
