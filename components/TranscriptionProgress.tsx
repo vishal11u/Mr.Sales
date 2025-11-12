@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 
 interface TranscriptionProgressProps {
@@ -15,10 +16,10 @@ export const TranscriptionProgress: React.FC<TranscriptionProgressProps> = ({ te
   }, [text]);
 
   return (
-    <div className="w-full max-w-2xl bg-base-200 rounded-lg p-4 shadow-inner">
+    <div className="w-full max-w-2xl bg-base-200 dark:bg-dark-base-200 rounded-lg p-4 shadow-inner border border-base-300 dark:border-dark-base-300">
       <pre
         ref={preRef}
-        className="whitespace-pre-wrap font-mono text-sm text-left text-content-200 overflow-y-auto h-48 scrollbar-thin scrollbar-thumb-base-300 scrollbar-track-base-200"
+        className="whitespace-pre-wrap font-mono text-sm text-left text-content-200 dark:text-dark-content-200 overflow-y-auto h-48 scrollbar-thin"
       >
         {text || 'Waiting for transcription to start...'}
       </pre>

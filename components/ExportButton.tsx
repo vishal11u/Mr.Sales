@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { AnalysisResult } from '../types';
 import { exportTranscriptToCsv, exportSentimentToCsv, exportCoachingCardToText } from '../utils/exportUtils';
@@ -5,9 +6,11 @@ import { ExportIcon } from './icons/ExportIcon';
 
 interface ExportButtonProps {
   result: AnalysisResult;
+  // FIX: Add comment prop to be passed to export function.
+  comment: string;
 }
 
-export const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
+export const ExportButton: React.FC<ExportButtonProps> = ({ result, comment }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +37,8 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
   };
 
   const handleExportCoachingCard = () => {
-    exportCoachingCardToText(result.coachingCard);
+    // FIX: Pass the full result and the comment to the export function.
+    exportCoachingCardToText(result, comment);
     setIsOpen(false);
   };
 
@@ -43,7 +47,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
       <div>
         <button
           type="button"
-          className="inline-flex items-center justify-center w-full rounded-md border border-base-300 shadow-sm px-4 py-2 bg-base-200 text-sm font-medium text-content-100 hover:bg-base-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base-100 focus:ring-brand-primary"
+          className="inline-flex items-center justify-center w-full rounded-md border border-base-300 dark:border-dark-base-300 shadow-sm px-4 py-2 bg-base-200 dark:bg-dark-base-200 text-sm font-medium text-content-100 dark:text-dark-content-100 hover:bg-base-300 dark:hover:bg-dark-base-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base-100 dark:focus:ring-offset-dark-base-100 focus:ring-brand-primary dark:focus:ring-dark-brand-primary"
           onClick={() => setIsOpen(!isOpen)}
           aria-haspopup="true"
           aria-expanded={isOpen}
@@ -55,28 +59,28 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ result }) => {
 
       {isOpen && (
         <div
-          className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-base-300 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+          className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-base-200 dark:bg-dark-base-300 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
           role="menu"
           aria-orientation="vertical"
         >
           <div className="py-1" role="none">
             <button
               onClick={handleExportTranscript}
-              className="text-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-200 hover:text-content-100"
+              className="text-content-200 dark:text-dark-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-300 dark:hover:bg-dark-base-200 hover:text-content-100 dark:hover:text-dark-content-100"
               role="menuitem"
             >
               Transcript (CSV)
             </button>
             <button
               onClick={handleExportSentiment}
-              className="text-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-200 hover:text-content-100"
+              className="text-content-200 dark:text-dark-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-300 dark:hover:bg-dark-base-200 hover:text-content-100 dark:hover:text-dark-content-100"
               role="menuitem"
             >
               Sentiment Data (CSV)
             </button>
             <button
               onClick={handleExportCoachingCard}
-              className="text-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-200 hover:text-content-100"
+              className="text-content-200 dark:text-dark-content-200 block w-full text-left px-4 py-2 text-sm hover:bg-base-300 dark:hover:bg-dark-base-200 hover:text-content-100 dark:hover:text-dark-content-100"
               role="menuitem"
             >
               Coaching Summary (TXT)

@@ -1,9 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Coach AI</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales Coach AI | AI-Powered Sales Call Analysis</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Get instant, AI-powered feedback on your sales calls. Upload audio to receive a detailed analysis, transcript, sentiment graph, and actionable coaching to improve performance and close more deals.">
+    <meta name="keywords" content="sales coaching, AI analysis, call transcript, sentiment analysis, sales performance, sales training, AI coach">
+    <meta name="author" content="Sales Coach AI">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sales Coach AI | AI-Powered Sales Call Analysis">
+    <meta property="og:description" content="Transform your sales calls with data-driven insights. Get instant analysis and coaching from our advanced AI.">
+    <meta property="og:image" content="https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png"> <!-- Placeholder image -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Sales Coach AI | AI-Powered Sales Call Analysis">
+    <meta property="twitter:description" content="Transform your sales calls with data-driven insights. Get instant analysis and coaching from our advanced AI.">
+    <meta property="twitter:image" content="https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png"> <!-- Placeholder image -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Enable class-based dark mode
+            theme: {
+                extend: {
+                    colors: {
+                        // Light Theme
+                        'base-100': '#f8f9fa', // Lighter background
+                        'base-200': '#ffffff', // Card background
+                        'base-300': '#e9ecef', // Borders and dividers
+                        'content-100': '#212529', // Primary text
+                        'content-200': '#6c757d', // Secondary text
+                        'brand-primary': '#4f46e5', // Indigo
+                        'brand-accent': '#ec4899',  // Pink
+
+                        // Dark Theme
+                        'dark-base-100': '#121212', // Darker background
+                        'dark-base-200': '#1e1e1e', // Card background
+                        'dark-base-300': '#2c2c2c', // Borders and dividers
+                        'dark-content-100': '#e5e7eb', // Primary text
+                        'dark-content-200': '#9ca3af', // Secondary text
+                        'dark-brand-primary': '#818cf8', // Lighter Indigo
+                        'dark-brand-accent': '#f9a8d4',   // Lighter Pink
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-in-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        },
+                    },
+                },
+            },
+        };
+    </script>
+     <script>
+        // Immediately apply theme from localStorage or system preference to prevent FOUC
+        (function() {
+            try {
+                const theme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (theme === 'dark' || (!theme && systemPrefersDark)) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+        })();
+    </script>
+    <style>
+        .prose {
+            color: var(--tw-prose-body);
+        }
+        .prose h1, .prose h2, .prose h3 {
+            color: var(--tw-prose-headings);
+        }
+        .dark .prose {
+            --tw-prose-body: theme('colors.dark-content-200');
+            --tw-prose-headings: theme('colors.dark-content-100');
+            --tw-prose-links: theme('colors.dark-brand-accent');
+        }
+        .light .prose {
+             --tw-prose-body: theme('colors.content-200');
+            --tw-prose-headings: theme('colors.content-100');
+            --tw-prose-links: theme('colors.brand-accent');
+        }
+        /* Thin scrollbar for webkit browsers */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: theme('colors.base-200');
+        }
+        .dark .scrollbar-thin::-webkit-scrollbar-track {
+            background: theme('colors.dark-base-200');
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: theme('colors.base-300');
+            border-radius: 20px;
+            border: 3px solid theme('colors.base-200');
+        }
+        .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: theme('colors.dark-base-300');
+            border-color: theme('colors.dark-base-200');
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-in-out forwards;
+        }
+    </style>
     
     <script type="importmap">
     {
@@ -11,102 +138,14 @@
         "react": "https://aistudiocdn.com/react@^19.2.0",
         "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
         "react/": "https://aistudiocdn.com/react@^19.2.0/",
-        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0",
-        "recharts": "https://aistudiocdn.com/recharts@^3.4.1"
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.29.0"
       }
     }
     </script>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'base-100': '#1d232a', // dark bg
-              'base-200': '#2a323c', // slightly lighter dark bg
-              'base-300': '#4a5568', // even lighter for borders/dividers
-              'content-100': '#f3f4f6', // primary text
-              'content-200': '#9ca3af', // secondary text
-              'brand-primary': '#60a5fa', // blue
-              'brand-accent': '#34d399', // green
-            },
-            animation: {
-              'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-              'fade-in': 'fadeIn 0.6s ease-out forwards',
-            },
-            keyframes: {
-              fadeInUp: {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-            }
-          },
-        },
-        plugins: [
-          function({ addBase, theme }) {
-            addBase({
-              '.btn': { 
-                padding: '.5rem 1rem', 
-                borderRadius: '.5rem', 
-                fontWeight: '600',
-                transition: 'background-color 0.2s',
-              },
-              '.btn-primary': {
-                backgroundColor: theme('colors.brand-primary'),
-                color: '#ffffff',
-                '&:hover': {
-                  backgroundColor: '#3b82f6',
-                },
-              },
-              '.btn-outline': {
-                  backgroundColor: 'transparent',
-                  border: `1px solid ${theme('colors.base-300')}`,
-                  color: theme('colors.content-200'),
-                  '&:hover': {
-                      backgroundColor: theme('colors.base-300'),
-                      color: theme('colors.content-100'),
-                  }
-              },
-              '.btn-sm': {
-                  padding: '.25rem .75rem',
-                  fontSize: '.875rem',
-              }
-            });
-          }
-        ],
-      }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gDkyBzcgoe3/jV6A0dqtXH/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <style>
-      body {
-        background-color: #1d232a;
-        background-image: radial-gradient(circle at top left, rgba(96, 165, 250, 0.1), transparent 40%),
-                          radial-gradient(circle at bottom right, rgba(52, 211, 153, 0.1), transparent 40%);
-      }
-      /* Custom scrollbar for better aesthetics in dark mode */
-      ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #2a323c;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #4a5568;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #60a5fa;
-      }
-    </style>
 </head>
-<body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+<body class="bg-base-100 dark:bg-dark-base-100">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>

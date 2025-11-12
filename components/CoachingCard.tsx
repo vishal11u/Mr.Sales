@@ -1,23 +1,33 @@
 import React from 'react';
-import { CoachingCardData } from '../types';
+import { CoachingCardData, FeedbackValue } from '../types';
 import { CheckCircleIcon } from './icons/CheckCircleIcon';
 import { LightBulbIcon } from './icons/LightBulbIcon';
+import { FeedbackButtons } from './FeedbackButtons';
+import { Tooltip } from './Tooltip';
+import { InfoIcon } from './icons/InfoIcon';
 
 interface CoachingCardProps {
   data: CoachingCardData;
+  feedback: FeedbackValue;
+  onFeedback: (value: FeedbackValue) => void;
 }
 
-export const CoachingCard: React.FC<CoachingCardProps> = ({ data }) => {
+export const CoachingCard: React.FC<CoachingCardProps> = ({ data, feedback, onFeedback }) => {
   return (
-    <div className="bg-base-200 rounded-lg shadow-lg p-6">
-      <h2 className="text-xl font-bold mb-4 text-content-100">AI Coaching Card</h2>
+    <div className="bg-base-200 dark:bg-dark-base-200 rounded-lg shadow-lg p-6 border border-base-300 dark:border-dark-base-300">
+      <h2 className="text-xl font-bold mb-4 text-content-100 dark:text-dark-content-100">AI Coaching Card</h2>
       <div className="space-y-6">
         <div>
-          <h3 className="flex items-center text-lg font-semibold text-green-400 mb-2">
-            <CheckCircleIcon className="w-6 h-6 mr-2" />
-            Strengths
-          </h3>
-          <ul className="list-disc list-inside space-y-2 text-content-200 pl-2">
+          <div className="flex items-center space-x-2 mb-2">
+            <h3 className="flex items-center text-lg font-semibold text-green-600 dark:text-green-400">
+              <CheckCircleIcon className="w-6 h-6 mr-2" />
+              Strengths
+            </h3>
+            <Tooltip text="Highlights what the salesperson did well, based on best practices for sales conversations.">
+              <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
+            </Tooltip>
+          </div>
+          <ul className="list-disc list-inside space-y-2 text-content-200 dark:text-dark-content-200 pl-2">
             {data.strengths.map((item, index) => (
               <li 
                 key={`strength-${index}`}
@@ -30,11 +40,16 @@ export const CoachingCard: React.FC<CoachingCardProps> = ({ data }) => {
           </ul>
         </div>
         <div>
-          <h3 className="flex items-center text-lg font-semibold text-yellow-400 mb-2">
-            <LightBulbIcon className="w-6 h-6 mr-2" />
-            Opportunities
-          </h3>
-          <ul className="list-disc list-inside space-y-2 text-content-200 pl-2">
+          <div className="flex items-center space-x-2 mb-2">
+            <h3 className="flex items-center text-lg font-semibold text-yellow-600 dark:text-yellow-400">
+              <LightBulbIcon className="w-6 h-6 mr-2" />
+              Opportunities
+            </h3>
+            <Tooltip text="Identifies key moments where the salesperson could have used a different approach to improve the outcome.">
+              <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
+            </Tooltip>
+          </div>
+          <ul className="list-disc list-inside space-y-2 text-content-200 dark:text-dark-content-200 pl-2">
             {data.opportunities.map((item, index) => (
               <li 
                 key={`opportunity-${index}`}
@@ -46,6 +61,12 @@ export const CoachingCard: React.FC<CoachingCardProps> = ({ data }) => {
             ))}
           </ul>
         </div>
+      </div>
+      <div className="border-t border-base-300 dark:border-dark-base-300 mt-6 pt-4">
+        <FeedbackButtons
+          feedback={feedback}
+          onFeedback={onFeedback}
+        />
       </div>
     </div>
   );
