@@ -12,6 +12,7 @@ import { analyzeKeywords } from './utils/keywordUtils';
 import PrivacyPage from './components/pages/PrivacyPage';
 import TermsPage from './components/pages/TermsPage';
 import ContactPage from './components/pages/ContactPage';
+import { OnboardingTour, TourStep } from './components/OnboardingTour';
 
 export type View = 'home' | 'dashboard' | 'privacy' | 'terms' | 'contact';
 export type Theme = 'light' | 'dark';
@@ -27,6 +28,33 @@ const KEYWORDS: Keyword[] = [
     { text: 'budget' },
 ];
 
+const tourSteps: TourStep[] = [
+  {
+    selector: '[data-tour-id="welcome-title"]',
+    title: 'Welcome to Sales Coach AI!',
+    content: 'This quick tour will show you how to get started in just a few steps.',
+    position: 'bottom',
+  },
+  {
+    selector: '[data-tour-id="file-upload"]',
+    title: '1. Upload Your Audio File',
+    content: 'Click here or drag and drop a sales call recording to begin your analysis. Supported formats include MP3, WAV, and more.',
+    position: 'bottom',
+  },
+  {
+    selector: '[data-tour-id="features-section"]',
+    title: '2. Get Powerful Insights',
+    content: 'Our AI will process your call and generate a dashboard full of valuable feedback, including a full transcript, sentiment analysis, and personalized coaching.',
+    position: 'top',
+  },
+  {
+    selector: '[data-tour-id="file-upload"]',
+    title: 'Ready to Start?',
+    content: "It's time to upload your first call and unlock your true sales potential. Let's go!",
+    position: 'bottom',
+  },
+];
+
 function App() {
   const [view, setView] = useState<View>('home');
   const [theme, setTheme] = useState<Theme>('dark');
@@ -36,6 +64,7 @@ function App() {
   const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     // Apply theme from localStorage or system preference on initial load
@@ -43,6 +72,13 @@ function App() {
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
     setTheme(initialTheme);
+
+    // Check if the user has seen the onboarding tour
+    const hasSeenTour = localStorage.getItem('hasSeenOnboardingTour');
+    if (!hasSeenTour) {
+      // Use a timeout to ensure the page has rendered before starting the tour
+      setTimeout(() => setShowTour(true), 500);
+    }
   }, []);
 
   useEffect(() => {
@@ -105,6 +141,11 @@ function App() {
     setProgressText('');
   }
 
+  const handleTourClose = () => {
+    setShowTour(false);
+    localStorage.setItem('hasSeenOnboardingTour', 'true');
+  };
+
   const renderContent = () => {
     if (isLoading) {
       return (
@@ -142,6 +183,11 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100 dark:bg-dark-base-100 text-content-100 dark:text-dark-content-100 font-sans">
+      <OnboardingTour
+        isOpen={showTour && view === 'home'}
+        onClose={handleTourClose}
+        steps={tourSteps}
+      />
       <Header onHomeClick={resetApp} onNavClick={setView} theme={theme} setTheme={setTheme} />
       <main className="flex-grow container mx-auto px-4 py-8">
         {renderContent()}
