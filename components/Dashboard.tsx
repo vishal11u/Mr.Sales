@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { AnalysisResult, FeedbackValue, DashboardLayout } from '../types';
 import { TranscriptDisplay } from './TranscriptDisplay';
@@ -13,10 +14,12 @@ import { ManagerComments } from './ManagerComments';
 import { ExportButton } from './ExportButton';
 import { DashboardSettings } from './DashboardSettings';
 import { ShareButton } from './ShareButton';
+import { UploadIcon } from './icons/UploadIcon';
 
 interface DashboardProps {
   result: AnalysisResult;
   audioUrl: string;
+  onReset: () => void;
 }
 
 const initialLayout: DashboardLayout = {
@@ -30,7 +33,7 @@ const initialLayout: DashboardLayout = {
   keywordTracker: true,
 };
 
-export const Dashboard: React.FC<DashboardProps> = ({ result, audioUrl }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ result, audioUrl, onReset }) => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [coachingFeedback, setCoachingFeedback] = useState<FeedbackValue>(null);
@@ -43,6 +46,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ result, audioUrl }) => {
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-base-200 dark:bg-dark-base-200 rounded-lg shadow-sm border border-base-300 dark:border-dark-base-300">
         <h1 className="text-2xl font-bold">Analysis Dashboard</h1>
         <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            className="inline-flex items-center justify-center w-full rounded-md border border-brand-primary/50 dark:border-dark-brand-primary/50 shadow-sm px-4 py-2 bg-brand-primary/10 dark:bg-dark-brand-primary/10 text-sm font-medium text-brand-primary dark:text-dark-brand-primary hover:bg-brand-primary/20 dark:hover:bg-dark-brand-primary/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-base-100 dark:focus:ring-offset-dark-base-100 focus:ring-brand-primary dark:focus:ring-dark-brand-primary"
+            onClick={onReset}
+          >
+            <UploadIcon className="-ml-1 mr-2 h-5 w-5" />
+            New Analysis
+          </button>
           <DashboardSettings layout={layout} onLayoutChange={setLayout} />
           <ExportButton result={result} comment={managerComment} />
           <ShareButton result={result} />

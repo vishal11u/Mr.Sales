@@ -47,32 +47,32 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
           <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
         </Tooltip>
       </div>
-      <div className="max-h-[600px] overflow-y-auto pr-4 scrollbar-thin">
+      <div className="max-h-[600px] overflow-y-auto pr-2 scrollbar-thin">
         {transcript.map((entry, index) => (
           <div
             key={index}
             ref={index === activeIndex ? activeEntryRef : null}
-            className={`p-3 rounded-lg transition-colors duration-300 mb-3 ${
-              index === activeIndex
-                ? 'bg-brand-primary/10 dark:bg-dark-brand-primary/10'
-                : 'bg-base-100/50 dark:bg-dark-base-100/50'
-            }`}
+            className={`flex mb-4 animate-fade-in-up ${entry.speaker === 'B' ? 'justify-end' : 'justify-start'}`}
+            style={{ animationDelay: `${index * 30}ms`, opacity: 0 }}
           >
-            <div className="flex items-start">
-              <div className="w-24 flex-shrink-0">
-                <span className="font-mono text-xs text-content-200 dark:text-dark-content-200">
-                  {new Date(entry.timestamp * 1000).toISOString().substr(14, 5)}
-                </span>
-                <span
-                  className={`ml-2 text-xs font-bold ${
-                    entry.speaker === 'A' ? 'text-emerald-600 dark:text-emerald-400' : 'text-blue-600 dark:text-blue-400'
-                  }`}
-                >
-                  {entry.speaker === 'A' ? 'Customer' : 'Sales'}
-                </span>
+            <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl transition-all duration-300 ${
+                entry.speaker === 'B' 
+                  ? 'bg-brand-primary dark:bg-dark-brand-primary text-white rounded-br-none' 
+                  : 'bg-base-300 dark:bg-dark-base-300 text-content-100 dark:text-dark-content-100 rounded-bl-none'
+              } ${
+                index === activeIndex ? 'ring-2 ring-brand-accent dark:ring-dark-brand-accent shadow-lg scale-105' : 'shadow-md'
+              }`}
+            >
+              <div className="flex items-baseline justify-between mb-1">
+                  <p className={`font-bold text-sm ${entry.speaker === 'B' ? 'text-white/90' : 'text-content-100 dark:text-dark-content-100'}`}>
+                      {entry.speaker === 'A' ? 'Customer' : 'Salesperson'}
+                  </p>
+                  <span className={`text-xs ml-4 flex-shrink-0 ${entry.speaker === 'B' ? 'text-white/70' : 'text-content-200/80 dark:text-dark-content-200/80'}`}>
+                      {new Date(entry.timestamp * 1000).toISOString().substr(14, 5)}
+                  </span>
               </div>
-              <p className="text-sm text-content-200 dark:text-dark-content-200 whitespace-pre-wrap leading-relaxed">
-                {entry.text}
+              <p className="text-sm whitespace-pre-wrap leading-relaxed break-words">
+                  {entry.text}
               </p>
             </div>
           </div>

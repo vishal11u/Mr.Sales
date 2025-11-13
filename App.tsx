@@ -167,7 +167,7 @@ function App() {
     switch (view) {
       case 'dashboard':
         return analysisResult && audioUrl ? (
-          <Dashboard result={analysisResult} audioUrl={audioUrl} />
+          <Dashboard result={analysisResult} audioUrl={audioUrl} onReset={resetApp} />
         ) : <LandingPage onFileSelect={handleFileSelect} disabled={isLoading} error={error} />;
       case 'privacy':
         return <PrivacyPage />;

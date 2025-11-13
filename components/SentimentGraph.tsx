@@ -69,6 +69,9 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
     );
   }
 
+  // FIX: Sort data by timestamp to ensure the line is drawn correctly.
+  const sortedData = [...data].sort((a, b) => a.timestamp - b.timestamp);
+
   const width = 800;
   const height = 250;
   const padding = 40;
@@ -82,7 +85,7 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
     salesperson: '#3b82f6',
   };
 
-  const maxTime = duration > 0 ? duration : Math.max(...data.map(d => d.timestamp), 1);
+  const maxTime = duration > 0 ? duration : Math.max(...sortedData.map(d => d.timestamp), 1);
   const scaleX = (t: number) => (t / maxTime) * (width - padding * 2) + padding;
   const scaleY = (s: number) => (height - padding * 2) * (1 - (s + 1) / 2) + padding;
 
@@ -93,15 +96,16 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
     return (scaledValue * 2) - 1;
   };
 
-  const customerPoints = data.map(d => ({ x: scaleX(d.timestamp), y: scaleY(d.customerSentiment) }));
-  const salespersonPoints = data.map(d => ({ x: scaleX(d.timestamp), y: scaleY(d.salespersonSentiment) }));
+  const customerPoints = sortedData.map(d => ({ x: scaleX(d.timestamp), y: scaleY(d.customerSentiment) }));
+  const salespersonPoints = sortedData.map(d => ({ x: scaleX(d.timestamp), y: scaleY(d.salespersonSentiment) }));
 
   const customerPath = createSmoothPath(customerPoints);
   const salespersonPath = createSmoothPath(salespersonPoints);
 
-  const bottomY = height - padding;
-  const customerAreaPath = `${customerPath} L ${customerPoints[customerPoints.length - 1].x},${bottomY} L ${customerPoints[0].x},${bottomY} Z`;
-  const salespersonAreaPath = `${salespersonPath} L ${salespersonPoints[salespersonPoints.length - 1].x},${bottomY} L ${salespersonPoints[0].x},${bottomY} Z`;
+  // FIX: Use the neutral line as the baseline for a more intuitive area fill.
+  const neutralY = height / 2;
+  const customerAreaPath = `${customerPath} L ${customerPoints[customerPoints.length - 1].x},${neutralY} L ${customerPoints[0].x},${neutralY} Z`;
+  const salespersonAreaPath = `${salespersonPath} L ${salespersonPoints[salespersonPoints.length - 1].x},${neutralY} L ${salespersonPoints[0].x},${neutralY} Z`;
 
   const progressX = scaleX(currentTime);
 
@@ -129,7 +133,7 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
   const currentSalespersonY = findYatX(progressX, salespersonPoints);
 
   const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
-    if (!svgRef.current || data.length < 2) return;
+    if (!svgRef.current || sortedData.length < 2) return;
     const svg = svgRef.current;
     const rect = svg.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
@@ -194,17 +198,6 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          <defs>
-            <linearGradient id="customerGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={colors.customer} stopOpacity={0.4} />
-              <stop offset="100%" stopColor={colors.customer} stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="salespersonGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={colors.salesperson} stopOpacity={0.4} />
-              <stop offset="100%" stopColor={colors.salesperson} stopOpacity={0} />
-            </linearGradient>
-          </defs>
-
           {/* Grid lines */}
           <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke={colors.grid} />
           <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke={colors.grid} />
@@ -216,9 +209,9 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
           <text x={padding - 10} y={height/2 + 5} textAnchor="end" fill={colors.text} fontSize="10">Neutral</text>
           <text x={padding - 10} y={height-padding + 5} textAnchor="end" fill={colors.text} fontSize="10">Negative</text>
           
-          {/* Area paths */}
-          <path d={customerAreaPath} fill="url(#customerGradient)" />
-          <path d={salespersonAreaPath} fill="url(#salespersonGradient)" />
+          {/* FIX: Use solid fill with opacity to improve visualization and handle overlaps. */}
+          <path d={customerAreaPath} fill={colors.customer} fillOpacity="0.3" />
+          <path d={salespersonAreaPath} fill={colors.salesperson} fillOpacity="0.3" />
 
           {/* Data paths */}
           <path d={customerPath} stroke={colors.customer} fill="none" strokeWidth="2.5" strokeLinecap="round" />

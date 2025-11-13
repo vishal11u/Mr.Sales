@@ -9,6 +9,7 @@ import { ChecklistIcon } from './icons/ChecklistIcon';
 import { WandIcon } from './icons/WandIcon';
 import { ExportIcon } from './icons/ExportIcon';
 import { HowItWorks } from './HowItWorks';
+import { KeywordGlossary } from './KeywordGlossary';
 
 interface LandingPageProps {
   onFileSelect: (file: File) => void;
@@ -105,6 +106,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, disabled
           ))}
         </div>
       </div>
+
+      <KeywordGlossary />
     </div>
   );
 };
