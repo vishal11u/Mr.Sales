@@ -4,10 +4,11 @@
 
 Sales Coach AI is a modern web application designed to help sales professionals and managers improve their performance by providing deep, AI-driven analysis of their sales calls. Simply upload an audio recording, and our application will generate a comprehensive, interactive dashboard filled with actionable insights, a full transcript, sentiment analysis, and personalized coaching feedback.
 
-![Sales Coach AI Landing Page](https://ibb.co/39xLMLDq)
+![Sales Coach AI Landing Page](https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png)
 
 ## ✨ Key Features
 
+- **Privacy by Design:** Your audio files and analysis results are processed in-memory and are **never stored** on our servers, ensuring complete confidentiality.
 - **AI Coaching Card:** Get personalized feedback on your strengths and opportunities for improvement.
 - **Full Call Transcript:** A complete, time-stamped, and speaker-diarized transcript of the entire conversation that highlights the current speaker as the audio plays.
 - **Sentiment Analysis Graph:** Visualize the emotional tone of both the salesperson and the customer throughout the call on an interactive chart.
@@ -50,6 +51,16 @@ The intelligence of this application is powered by a single, sophisticated call 
 
 This approach makes the application robust and allows for complex, multi-layered analysis from a single API interaction.
 
+## 🔒 Privacy-First by Design
+
+We understand the sensitive nature of sales conversations. This application was built with privacy as a core principle:
+
+-   **No Data Storage:** We do **not** store your audio files or the generated analysis results on our servers. All processing is ephemeral and happens during your active session.
+-   **In-Memory Processing:** Audio files are sent to the AI service for analysis and are not written to disk on our servers.
+-   **Client-Side Results:** The complete analysis is sent directly back to your browser and is gone when you close the tab or start a new analysis.
+
+Your data is your own. Our service acts as a temporary processor to provide insights, not as a storage provider.
+
 ## 📁 Project Structure
 
 The project is organized into logical directories to maintain clean and scalable code.
@@ -67,7 +78,3 @@ The project is organized into logical directories to maintain clean and scalable
 ├── index.tsx           # Renders the React application
 └── README.md           # You are here!
 ```
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
