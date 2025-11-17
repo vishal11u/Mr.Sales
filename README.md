@@ -4,7 +4,7 @@
 
 Sales Coach AI is a modern web application designed to help sales professionals and managers improve their performance by providing deep, AI-driven analysis of their sales calls. Simply upload an audio recording, and our application will generate a comprehensive, interactive dashboard filled with actionable insights, a full transcript, sentiment analysis, and personalized coaching feedback.
 
-![Sales Coach AI Dashboard Screenshot](https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png)
+![Sales Coach AI Landing Page](https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png)
 
 ## ✨ Key Features
 
