@@ -1,28 +1,24 @@
-
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface TranscriptionProgressProps {
-  text: string;
+  children: React.ReactNode;
 }
 
-export const TranscriptionProgress: React.FC<TranscriptionProgressProps> = ({ text }) => {
+export const TranscriptionProgress: React.FC<TranscriptionProgressProps> = ({ children }) => {
   const preRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
-    // Auto-scroll to the bottom as new text comes in
     if (preRef.current) {
       preRef.current.scrollTop = preRef.current.scrollHeight;
     }
-  }, [text]);
+  }, [children]);
 
   return (
-    <div className="w-full max-w-2xl bg-base-200 dark:bg-dark-base-200 rounded-lg p-4 shadow-inner border border-base-300 dark:border-dark-base-300">
-      <pre
-        ref={preRef}
-        className="whitespace-pre-wrap font-mono text-sm text-left text-content-200 dark:text-dark-content-200 overflow-y-auto h-48 scrollbar-thin"
-      >
-        {text || 'Waiting for transcription to start...'}
-      </pre>
-    </div>
+    <pre
+      ref={preRef}
+      className="mt-12 font-mono text-xs text-content-200 dark:text-dark-content-200 w-full max-w-2xl text-left p-4 bg-base-200/50 dark:bg-dark-base-200/50 rounded-md h-48 overflow-y-auto whitespace-pre-wrap break-words scrollbar-thin"
+    >
+      {children}
+    </pre>
   );
 };

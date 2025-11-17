@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { SentimentDataPoint } from '../types';
 import { ChartBarIcon } from './icons/ChartBarIcon';
@@ -10,6 +9,8 @@ interface SentimentGraphProps {
   data: SentimentDataPoint[];
   currentTime: number;
   duration: number;
+  speakerALabel: string;
+  speakerBLabel: string;
 }
 
 // Helper functions for creating a smooth curve using a cardinal spline
@@ -44,7 +45,7 @@ const formatTime = (timeInSeconds: number) => {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
 
-export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTime, duration }) => {
+export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTime, duration, speakerALabel, speakerBLabel }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [hoverInfo, setHoverInfo] = useState<{ x: number; timestamp: number; customerY: number; salespersonY: number; } | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -183,11 +184,11 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
             <div className="font-mono mb-1 text-center text-content-100 dark:text-dark-content-100">{formatTime(hoverInfo.timestamp)}</div>
             <div className="flex items-center text-content-200 dark:text-dark-content-200 whitespace-nowrap">
               <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
-              <span>Cust: {inverseScaleY(hoverInfo.customerY).toFixed(2)}</span>
+              <span>{speakerALabel}: {inverseScaleY(hoverInfo.customerY).toFixed(2)}</span>
             </div>
             <div className="flex items-center text-content-200 dark:text-dark-content-200 whitespace-nowrap">
               <span className="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
-              <span>Sales: {inverseScaleY(hoverInfo.salespersonY).toFixed(2)}</span>
+              <span>{speakerBLabel}: {inverseScaleY(hoverInfo.salespersonY).toFixed(2)}</span>
             </div>
           </div>
         )}
@@ -239,11 +240,11 @@ export const SentimentGraph: React.FC<SentimentGraphProps> = ({ data, currentTim
       <div className="flex justify-end space-x-4 mt-2 text-xs text-content-200 dark:text-dark-content-200">
           <div className="flex items-center">
               <span className="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span>
-              <span>Customer</span>
+              <span>{speakerALabel}</span>
           </div>
           <div className="flex items-center">
               <span className="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-              <span>Salesperson</span>
+              <span>{speakerBLabel}</span>
           </div>
       </div>
     </div>

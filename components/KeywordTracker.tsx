@@ -6,9 +6,11 @@ import { InfoIcon } from './icons/InfoIcon';
 
 interface KeywordTrackerProps {
   data?: KeywordAnalysis[];
+  speakerALabel: string;
+  speakerBLabel: string;
 }
 
-export const KeywordTracker: React.FC<KeywordTrackerProps> = ({ data }) => {
+export const KeywordTracker: React.FC<KeywordTrackerProps> = ({ data, speakerALabel, speakerBLabel }) => {
   if (!data || data.length === 0) return null;
 
   // Find the maximum mention count to normalize the bar widths for visual consistency
@@ -34,7 +36,7 @@ export const KeywordTracker: React.FC<KeywordTrackerProps> = ({ data }) => {
       <h2 className="flex items-center text-xl font-bold mb-4 text-content-100 dark:text-dark-content-100">
         <TagIcon className="w-6 h-6 mr-3 text-brand-accent dark:text-dark-brand-accent" />
         <span>Keyword Tracker</span>
-        <Tooltip text="Counts the number of times each pre-defined keyword was mentioned by both the salesperson and the customer.">
+        <Tooltip text="Counts the number of times each pre-defined keyword was mentioned by both speakers.">
           <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200 ml-2" />
         </Tooltip>
       </h2>
@@ -46,14 +48,14 @@ export const KeywordTracker: React.FC<KeywordTrackerProps> = ({ data }) => {
             </h3>
             <div className="space-y-2 text-xs">
               <div className="grid grid-cols-12 items-center gap-2">
-                <span className="col-span-3 text-content-200 dark:text-dark-content-200">Salesperson</span>
+                <span className="col-span-3 text-content-200 dark:text-dark-content-200">{speakerBLabel}</span>
                 <div className="col-span-8">
                     <Bar count={kw.salespersonMentions} max={maxMentions} colorClass="bg-blue-500 dark:bg-blue-400" />
                 </div>
                 <span className="col-span-1 text-right font-medium text-content-100 dark:text-dark-content-100">{kw.salespersonMentions}</span>
               </div>
               <div className="grid grid-cols-12 items-center gap-2">
-                <span className="col-span-3 text-content-200 dark:text-dark-content-200">Customer</span>
+                <span className="col-span-3 text-content-200 dark:text-dark-content-200">{speakerALabel}</span>
                 <div className="col-span-8">
                     <Bar count={kw.customerMentions} max={maxMentions} colorClass="bg-emerald-500 dark:bg-emerald-400" />
                 </div>

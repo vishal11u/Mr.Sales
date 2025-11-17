@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="scroll-behavior: smooth;">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sales Coach AI | AI-Powered Sales Call Analysis</title>
+    <title>Clarity AI | AI-Powered Conversation Analysis</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Get instant, AI-powered feedback on your sales calls. Upload audio to receive a detailed analysis, transcript, sentiment graph, and actionable coaching to improve performance and close more deals.">
-    <meta name="keywords" content="sales coaching, AI analysis, call transcript, sentiment analysis, sales performance, sales training, AI coach">
-    <meta name="author" content="Sales Coach AI">
+    <meta name="description" content="Get instant, AI-powered feedback on your conversations. Upload audio to receive detailed analysis and actionable coaching to improve your skills with Clarity AI.">
+    <meta name="keywords" content="communication coaching, AI analysis, call transcript, sentiment analysis, sales performance, interview practice, presentation skills, AI coach">
+    <meta name="author" content="Clarity AI">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Sales Coach AI | AI-Powered Sales Call Analysis">
-    <meta property="og:description" content="Transform your sales calls with data-driven insights. Get instant analysis and coaching from our advanced AI.">
+    <meta property="og:title" content="Clarity AI | AI-Powered Conversation Analysis">
+    <meta property="og:description" content="Transform your conversations with data-driven insights. Get instant analysis and coaching from our advanced AI.">
     <meta property="og:image" content="https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png"> <!-- Placeholder image -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Sales Coach AI | AI-Powered Sales Call Analysis">
-    <meta property="twitter:description" content="Transform your sales calls with data-driven insights. Get instant analysis and coaching from our advanced AI.">
+    <meta property="twitter:title" content="Clarity AI | AI-Powered Conversation Analysis">
+    <meta property="twitter:description" content="Transform your conversations with data-driven insights. Get instant analysis and coaching from our advanced AI.">
     <meta property="twitter:image" content="https://storage.googleapis.com/aistudio-hosting/sales-coach-og.png"> <!-- Placeholder image -->
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -82,6 +82,13 @@
         })();
     </script>
     <style>
+        html {
+            /* Smooth scrolling for anchor links */
+            scroll-behavior: smooth;
+            /* Add padding to the top of the scroll container to offset the sticky header */
+            scroll-padding-top: 80px; /* Adjust this value based on your header's height */
+        }
+
         .prose {
             color: var(--tw-prose-body);
         }
@@ -129,6 +136,34 @@
         }
         .animate-fade-in-up {
             animation: fadeInUp 0.5s ease-in-out forwards;
+        }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-in-up { animation: slideInUp 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards; }
+
+        @keyframes fadeInFast {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in-fast { animation: fadeInFast 0.2s ease-in-out forwards; }
+        
+        @keyframes equalizer {
+            0%, 100% { transform: scaleY(0.1); }
+            50% { transform: scaleY(1.0); }
+        }
+        .animate-equalizer {
+            animation-name: equalizer;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            transform-origin: bottom;
         }
     </style>
     

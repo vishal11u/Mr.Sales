@@ -4,21 +4,22 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
-import { TranscriptionProgress } from './components/TranscriptionProgress';
 import { analyzeAudioStream } from './services/geminiService';
-import { AnalysisResult, Keyword } from './types';
+import { AnalysisResult, Keyword, ConversationType } from './types';
 import { parseTranscript } from './utils/parsingUtils';
 import { analyzeKeywords } from './utils/keywordUtils';
 import PrivacyPage from './components/pages/PrivacyPage';
 import TermsPage from './components/pages/TermsPage';
 import ContactPage from './components/pages/ContactPage';
-import { OnboardingTour, TourStep } from './components/OnboardingTour';
+import { SAMPLE_ANALYSIS_RESULT, SAMPLE_AUDIO_URL } from './utils/sampleData';
+import { AnalysisAnimation } from './components/AnalysisAnimation';
+import { TranscriptionProgress } from './components/TranscriptionProgress';
 
 export type View = 'home' | 'dashboard' | 'privacy' | 'terms' | 'contact';
 export type Theme = 'light' | 'dark';
 
-// Pre-defined keywords for analysis
-const KEYWORDS: Keyword[] = [
+// Default keywords for analysis
+const DEFAULT_KEYWORDS: Keyword[] = [
     { text: 'pricing' },
     { text: 'discount' },
     { text: 'contract' },
@@ -28,43 +29,17 @@ const KEYWORDS: Keyword[] = [
     { text: 'budget' },
 ];
 
-const tourSteps: TourStep[] = [
-  {
-    selector: '[data-tour-id="welcome-title"]',
-    title: 'Welcome to Sales Coach AI!',
-    content: 'This quick tour will show you how to get started in just a few steps.',
-    position: 'bottom',
-  },
-  {
-    selector: '[data-tour-id="file-upload"]',
-    title: '1. Upload Your Audio File',
-    content: 'Click here or drag and drop a sales call recording to begin your analysis. Supported formats include MP3, WAV, and more.',
-    position: 'bottom',
-  },
-  {
-    selector: '[data-tour-id="features-section"]',
-    title: '2. Get Powerful Insights',
-    content: 'Our AI will process your call and generate a dashboard full of valuable feedback, including a full transcript, sentiment analysis, and personalized coaching.',
-    position: 'top',
-  },
-  {
-    selector: '[data-tour-id="file-upload"]',
-    title: 'Ready to Start?',
-    content: "It's time to upload your first call and unlock your true sales potential. Let's go!",
-    position: 'bottom',
-  },
-];
-
 function App() {
   const [view, setView] = useState<View>('home');
   const [theme, setTheme] = useState<Theme>('dark');
   const [file, setFile] = useState<File | null>(null);
+  const [conversationType, setConversationType] = useState<ConversationType | null>(null);
+  const [keywords, setKeywords] = useState<Keyword[]>(DEFAULT_KEYWORDS);
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [progressText, setProgressText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [showTour, setShowTour] = useState(false);
 
   useEffect(() => {
     // Apply theme from localStorage or system preference on initial load
@@ -72,19 +47,17 @@ function App() {
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
     setTheme(initialTheme);
-
-    // Check if the user has seen the onboarding tour
-    const hasSeenTour = localStorage.getItem('hasSeenOnboardingTour');
-    if (!hasSeenTour) {
-      // Use a timeout to ensure the page has rendered before starting the tour
-      setTimeout(() => setShowTour(true), 500);
-    }
   }, []);
 
   useEffect(() => {
     document.documentElement.className = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
+  
+  const handleConversationTypeSelect = (type: ConversationType) => {
+    setConversationType(type);
+    setError(null);
+  }
 
   const handleFileSelect = (selectedFile: File) => {
     setFile(selectedFile);
@@ -94,13 +67,44 @@ function App() {
     setProgressText('');
     handleAnalyze(selectedFile);
   };
+  
+  const handleAddKeyword = (text: string) => {
+    if (text && !keywords.some(kw => kw.text.toLowerCase() === text.toLowerCase())) {
+        setKeywords([...keywords, { text }]);
+    }
+  };
+
+  const handleRemoveKeyword = (text: string) => {
+    setKeywords(keywords.filter(kw => kw.text.toLowerCase() !== text.toLowerCase()));
+  };
+  
+  const handleTrySample = () => {
+    setIsLoading(true);
+    setError(null);
+    setAnalysisResult(null);
+    setProgressText('Loading sample analysis...');
+    
+    // Simulate a short delay to feel like processing is happening
+    setTimeout(() => {
+      setAnalysisResult(SAMPLE_ANALYSIS_RESULT);
+      setAudioUrl(SAMPLE_AUDIO_URL);
+      setConversationType('sales'); // The sample is a sales call
+      setKeywords(DEFAULT_KEYWORDS); // Reset keywords for the sample
+      setView('dashboard');
+      setIsLoading(false);
+    }, 1500);
+  };
 
   const handleAnalyze = async (audioFile: File) => {
+    if (!conversationType) {
+        setError('Please select a conversation type before uploading a file.');
+        return;
+    }
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
     try {
-      const jsonText = await analyzeAudioStream(audioFile, setProgressText);
+      const jsonText = await analyzeAudioStream(audioFile, conversationType, setProgressText);
       
       let parsedData;
       try {
@@ -112,7 +116,7 @@ function App() {
       }
       
       const transcript = parseTranscript(parsedData.transcript.map((t: any) => `[${t.timestamp}] Speaker ${t.speaker}: ${t.text}`).join('\n'));
-      const keywordAnalysis = analyzeKeywords(transcript, KEYWORDS);
+      const keywordAnalysis = analyzeKeywords(transcript, keywords);
 
       const result: AnalysisResult = {
         ...parsedData,
@@ -122,9 +126,10 @@ function App() {
 
       setAnalysisResult(result);
       setView('dashboard');
-    } catch (err: any) {
+    } catch (err: any)      {
       setError(err.message || 'An unknown error occurred during analysis.');
-      setView('home'); // Go back to home on error
+      // Don't reset conversation type on error, so user can try another file.
+      setView('home'); 
     } finally {
       setIsLoading(false);
     }
@@ -139,36 +144,31 @@ function App() {
     setError(null);
     setAnalysisResult(null);
     setProgressText('');
+    setConversationType(null);
+    setKeywords(DEFAULT_KEYWORDS);
   }
-
-  const handleTourClose = () => {
-    setShowTour(false);
-    localStorage.setItem('hasSeenOnboardingTour', 'true');
-  };
 
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="flex flex-col items-center justify-center text-center p-8 animate-fade-in">
-          <h2 className="text-2xl font-bold mb-4">Analyzing Your Sales Call...</h2>
-          <p className="text-content-200 dark:text-dark-content-200 mb-6">This might take a moment. Please wait.</p>
-          <div className="w-full max-w-2xl">
-            <div className="relative pt-1">
-              <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-brand-primary/20">
-                <div style={{ width: '100%' }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-brand-primary animate-pulse"></div>
-              </div>
-            </div>
-            <TranscriptionProgress text={progressText} />
-          </div>
+        <div className="flex flex-col items-center justify-center text-center p-8 animate-fade-in h-[60vh]">
+          <h2 className="text-3xl font-bold mb-4">Analyzing Your Conversation...</h2>
+          <p className="text-content-200 dark:text-dark-content-200 mb-12">This might take a moment. Please wait.</p>
+          
+          <AnalysisAnimation />
+          
+          <TranscriptionProgress>
+            {progressText}
+          </TranscriptionProgress>
         </div>
       );
     }
 
     switch (view) {
       case 'dashboard':
-        return analysisResult && audioUrl ? (
-          <Dashboard result={analysisResult} audioUrl={audioUrl} onReset={resetApp} />
-        ) : <LandingPage onFileSelect={handleFileSelect} disabled={isLoading} error={error} />;
+        return analysisResult && audioUrl && conversationType ? (
+          <Dashboard result={analysisResult} audioUrl={audioUrl} onReset={resetApp} conversationType={conversationType} />
+        ) : <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} onTrySample={handleTrySample} disabled={isLoading} error={error} />;
       case 'privacy':
         return <PrivacyPage />;
       case 'terms':
@@ -177,17 +177,14 @@ function App() {
         return <ContactPage />;
       case 'home':
       default:
-        return <LandingPage onFileSelect={handleFileSelect} disabled={isLoading} error={error} />;
+        return (
+            <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} onTrySample={handleTrySample} disabled={isLoading} error={error} />
+        );
     }
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-base-100 dark:bg-dark-base-100 text-content-100 dark:text-dark-content-100 font-sans">
-      <OnboardingTour
-        isOpen={showTour && view === 'home'}
-        onClose={handleTourClose}
-        steps={tourSteps}
-      />
       <Header onHomeClick={resetApp} onNavClick={setView} theme={theme} setTheme={setTheme} />
       <main className="flex-grow container mx-auto px-4 py-8">
         {renderContent()}

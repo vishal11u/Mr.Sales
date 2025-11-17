@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileUpload } from './FileUpload';
+import { ConversationTypeSelector } from './ConversationTypeSelector';
 import { LightBulbIcon } from './icons/LightBulbIcon';
 import { TranscriptIcon } from './icons/TranscriptIcon';
 import { ChartBarIcon } from './icons/ChartBarIcon';
@@ -10,9 +11,17 @@ import { WandIcon } from './icons/WandIcon';
 import { ExportIcon } from './icons/ExportIcon';
 import { HowItWorks } from './HowItWorks';
 import { KeywordGlossary } from './KeywordGlossary';
+import { ConversationType, Keyword } from '../types';
+import { KeywordInput } from './KeywordInput';
 
 interface LandingPageProps {
   onFileSelect: (file: File) => void;
+  onConversationTypeSelect: (type: ConversationType) => void;
+  conversationType: ConversationType | null;
+  keywords: Keyword[];
+  onAddKeyword: (text: string) => void;
+  onRemoveKeyword: (text: string) => void;
+  onTrySample: () => void;
   disabled: boolean;
   error: string | null;
 }
@@ -40,7 +49,7 @@ const features = [
     },
     {
       icon: TagIcon,
-      title: 'Keyword Tracking',
+      title: 'Custom Keyword Tracking',
       description: 'Monitor how often key terms related to pricing, features, and competitors are mentioned.'
     },
     {
@@ -61,34 +70,62 @@ const features = [
 ];
 
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, disabled, error }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, onConversationTypeSelect, conversationType, keywords, onAddKeyword, onRemoveKeyword, onTrySample, disabled, error }) => {
   return (
     <div className="animate-fade-in">
       <div className="text-center">
         <h1
           className="text-4xl md:text-5xl font-extrabold tracking-tight text-content-100 dark:text-dark-content-100"
-          data-tour-id="welcome-title"
         >
-          Unlock Your Sales Potential with
-          <span className="text-brand-primary dark:text-dark-brand-primary ml-3">AI-Powered Coaching</span>
+          Analyze & Improve Your Conversations with
+          <span className="text-brand-primary dark:text-dark-brand-primary ml-3">AI</span>
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-content-200 dark:text-dark-content-200">
-          Get instant, data-driven feedback on your sales calls. Upload a recording to receive a detailed analysis of your performance, identify areas for improvement, and close more deals.
+          Welcome to Clarity AI. Get instant, data-driven feedback on your sales calls, interviews, and presentations. Upload a recording to receive a detailed analysis and improve your communication skills.
         </p>
 
-        <div className="mt-12" data-tour-id="file-upload">
-          <FileUpload onFileSelect={onFileSelect} disabled={disabled} />
+        <div className="mt-12">
+          {!conversationType ? (
+            <div>
+              <ConversationTypeSelector onSelect={onConversationTypeSelect} />
+            </div>
+          ) : (
+            <>
+                <div className="animate-fade-in mb-8">
+                    <KeywordInput 
+                        keywords={keywords}
+                        onAddKeyword={onAddKeyword}
+                        onRemoveKeyword={onRemoveKeyword}
+                    />
+                </div>
+                <div className="animate-fade-in">
+                  <FileUpload onFileSelect={onFileSelect} disabled={disabled} />
+                </div>
+            </>
+          )}
+
           {error && (
               <div className="mt-4 text-red-500 bg-red-500/10 p-3 rounded-md max-w-lg mx-auto">
                   <strong>Analysis Failed:</strong> {error}
               </div>
           )}
+
+           <div className="mt-8">
+                <span className="text-sm text-content-200/80 dark:text-dark-content-200/80">Don't have a recording handy?</span>
+                <button
+                    onClick={onTrySample}
+                    disabled={disabled}
+                    className="ml-2 text-sm font-semibold text-brand-primary dark:text-dark-brand-primary hover:underline focus:outline-none focus:ring-2 focus:ring-brand-accent rounded-sm disabled:opacity-50"
+                >
+                    Try a Sample Analysis
+                </button>
+            </div>
         </div>
       </div>
       
       <HowItWorks />
 
-      <div className="mt-20 max-w-7xl mx-auto" data-tour-id="features-section">
+      <div className="mt-20 max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-12">Features at a Glance</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (

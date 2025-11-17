@@ -1,5 +1,6 @@
 import { GoogleGenAI, Part, Type } from "@google/genai";
-import { ANALYSIS_PROMPT, ANALYSIS_SCHEMA } from '../utils/analysisUtils';
+import { ANALYSIS_SCHEMA, getAnalysisPrompt } from '../utils/analysisUtils';
+import { ConversationType } from "../types";
 
 const fileToGenerativePart = async (file: File): Promise<Part> => {
     const base64EncodedData = await new Promise<string>((resolve, reject) => {
@@ -19,6 +20,7 @@ const fileToGenerativePart = async (file: File): Promise<Part> => {
 
 export const analyzeAudioStream = async (
     audioFile: File,
+    conversationType: ConversationType,
     onProgress: (text: string) => void
 ): Promise<string> => {
     try {
@@ -27,8 +29,9 @@ export const analyzeAudioStream = async (
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         onProgress('Preparing audio file for analysis...');
         const audioPart = await fileToGenerativePart(audioFile);
+        const analysisPrompt = getAnalysisPrompt(conversationType);
 
-        const contents = { parts: [audioPart, { text: ANALYSIS_PROMPT }] };
+        const contents = { parts: [audioPart, { text: analysisPrompt }] };
 
         onProgress('Starting analysis... This may take a few moments as the model processes the audio.');
         

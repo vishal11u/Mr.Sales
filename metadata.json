@@ -1,5 +1,5 @@
 {
-  "name": "Sales Coach AI",
-  "description": "Upload sales call audio to receive a detailed analysis, including a diarized transcript, sentiment graph, and AI-powered coaching feedback to improve sales performance.",
+  "name": "Clarity AI",
+  "description": "Upload audio of your conversations to receive a detailed analysis, including a diarized transcript, sentiment graph, and AI-powered coaching feedback to improve your communication skills.",
   "requestFramePermissions": []
 }

@@ -10,12 +10,13 @@ interface CoachingCardProps {
   data: CoachingCardData;
   feedback: FeedbackValue;
   onFeedback: (value: FeedbackValue) => void;
+  title: string;
 }
 
-export const CoachingCard: React.FC<CoachingCardProps> = ({ data, feedback, onFeedback }) => {
+export const CoachingCard: React.FC<CoachingCardProps> = ({ data, feedback, onFeedback, title }) => {
   return (
     <div className="bg-base-200 dark:bg-dark-base-200 rounded-lg shadow-lg p-6 border border-base-300 dark:border-dark-base-300">
-      <h2 className="text-xl font-bold mb-4 text-content-100 dark:text-dark-content-100">AI Coaching Card</h2>
+      <h2 className="text-xl font-bold mb-4 text-content-100 dark:text-dark-content-100">{title}</h2>
       <div className="space-y-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
@@ -23,7 +24,7 @@ export const CoachingCard: React.FC<CoachingCardProps> = ({ data, feedback, onFe
               <CheckCircleIcon className="w-6 h-6 mr-2" />
               Strengths
             </h3>
-            <Tooltip text="Highlights what the salesperson did well, based on best practices for sales conversations.">
+            <Tooltip text="Highlights what was done well, based on best practices for this type of conversation.">
               <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
             </Tooltip>
           </div>
@@ -45,7 +46,7 @@ export const CoachingCard: React.FC<CoachingCardProps> = ({ data, feedback, onFe
               <LightBulbIcon className="w-6 h-6 mr-2" />
               Opportunities
             </h3>
-            <Tooltip text="Identifies key moments where the salesperson could have used a different approach to improve the outcome.">
+            <Tooltip text="Identifies key moments where a different approach could have improved the outcome.">
               <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
             </Tooltip>
           </div>

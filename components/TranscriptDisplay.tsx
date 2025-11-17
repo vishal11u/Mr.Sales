@@ -7,9 +7,11 @@ import { InfoIcon } from './icons/InfoIcon';
 interface TranscriptDisplayProps {
   transcript: TranscriptEntry[];
   currentTime: number;
+  speakerALabel: string;
+  speakerBLabel: string;
 }
 
-export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript, currentTime }) => {
+export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript, currentTime, speakerALabel, speakerBLabel }) => {
   const activeEntryRef = useRef<HTMLDivElement>(null);
 
   const findActiveEntryIndex = () => {
@@ -41,7 +43,7 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
        <div className="flex items-center space-x-2 mb-4">
         <h2 className="flex items-center text-xl font-bold text-content-100 dark:text-dark-content-100">
             <TranscriptIcon className="w-6 h-6 mr-3" />
-            <span>Call Transcript</span>
+            <span>Conversation Transcript</span>
         </h2>
         <Tooltip text="A full, time-stamped transcription of the conversation. The current speaker is highlighted as the audio plays.">
           <InfoIcon className="w-4 h-4 text-content-200 dark:text-dark-content-200" />
@@ -65,7 +67,7 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
             >
               <div className="flex items-baseline justify-between mb-1">
                   <p className={`font-bold text-sm ${entry.speaker === 'B' ? 'text-white/90' : 'text-content-100 dark:text-dark-content-100'}`}>
-                      {entry.speaker === 'A' ? 'Customer' : 'Salesperson'}
+                      {entry.speaker === 'A' ? speakerALabel : speakerBLabel}
                   </p>
                   <span className={`text-xs ml-4 flex-shrink-0 ${entry.speaker === 'B' ? 'text-white/70' : 'text-content-200/80 dark:text-dark-content-200/80'}`}>
                       {new Date(entry.timestamp * 1000).toISOString().substr(14, 5)}

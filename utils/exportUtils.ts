@@ -48,8 +48,8 @@ export const exportSentimentToCsv = (data: SentimentDataPoint[]) => {
 };
 
 export const exportCoachingCardToText = (data: AnalysisResult, comment: string) => {
-    let content = 'Sales Coach AI - Full Analysis Summary\n';
-    content += '======================================\n\n';
+    let content = 'Clarity AI - Full Analysis Summary\n';
+    content += '==============================================\n\n';
     
     // Coaching Card
     content += 'AI Coaching Card:\n';

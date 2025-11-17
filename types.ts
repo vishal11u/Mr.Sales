@@ -1,16 +1,18 @@
 // FIX: Removed file content markers that were causing parsing errors.
 export type FeedbackValue = 'up' | 'down' | null;
 
+export type ConversationType = 'sales' | 'interview' | 'support' | 'presentation';
+
 export interface TranscriptEntry {
   timestamp: number;
-  speaker: 'A' | 'B'; // A: Customer, B: Salesperson
+  speaker: 'A' | 'B'; // A: Customer/Interviewer, B: Salesperson/Candidate
   text: string;
 }
 
 export interface SentimentDataPoint {
   timestamp: number;
-  customerSentiment: number; // -1 to 1
-  salespersonSentiment: number; // -1 to 1
+  customerSentiment: number; // For Speaker A
+  salespersonSentiment: number; // For Speaker B
 }
 
 export interface CoachingCardData {
