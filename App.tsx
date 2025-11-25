@@ -1,3 +1,4 @@
+
 // FIX: Removed file content markers that were causing parsing errors.
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
@@ -35,6 +36,7 @@ function App() {
   const [file, setFile] = useState<File | null>(null);
   const [conversationType, setConversationType] = useState<ConversationType | null>(null);
   const [keywords, setKeywords] = useState<Keyword[]>(DEFAULT_KEYWORDS);
+  const [audioLanguage, setAudioLanguage] = useState<string>('Auto-Detect');
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [progressText, setProgressText] = useState('');
@@ -104,7 +106,7 @@ function App() {
     setError(null);
     setAnalysisResult(null);
     try {
-      const jsonText = await analyzeAudioStream(audioFile, conversationType, setProgressText);
+      const jsonText = await analyzeAudioStream(audioFile, conversationType, audioLanguage, setProgressText);
       
       let parsedData;
       try {
@@ -146,6 +148,7 @@ function App() {
     setProgressText('');
     setConversationType(null);
     setKeywords(DEFAULT_KEYWORDS);
+    setAudioLanguage('Auto-Detect');
   }
 
   const renderContent = () => {
@@ -168,7 +171,7 @@ function App() {
       case 'dashboard':
         return analysisResult && audioUrl && conversationType ? (
           <Dashboard result={analysisResult} audioUrl={audioUrl} onReset={resetApp} conversationType={conversationType} />
-        ) : <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} onTrySample={handleTrySample} disabled={isLoading} error={error} />;
+        ) : <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} language={audioLanguage} onLanguageSelect={setAudioLanguage} onTrySample={handleTrySample} disabled={isLoading} error={error} />;
       case 'privacy':
         return <PrivacyPage />;
       case 'terms':
@@ -178,7 +181,7 @@ function App() {
       case 'home':
       default:
         return (
-            <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} onTrySample={handleTrySample} disabled={isLoading} error={error} />
+            <LandingPage onFileSelect={handleFileSelect} onConversationTypeSelect={handleConversationTypeSelect} conversationType={conversationType} keywords={keywords} onAddKeyword={handleAddKeyword} onRemoveKeyword={handleRemoveKeyword} language={audioLanguage} onLanguageSelect={setAudioLanguage} onTrySample={handleTrySample} disabled={isLoading} error={error} />
         );
     }
   }

@@ -1,4 +1,4 @@
-// FIX: Removed file content markers that were causing parsing errors.
+
 import { Type } from '@google/genai';
 import { ConversationType } from '../types';
 
@@ -45,10 +45,23 @@ const PROMPT_CONFIGS: Record<ConversationType, any> = {
     }
 };
 
-export const getAnalysisPrompt = (type: ConversationType): string => {
+export const getAnalysisPrompt = (type: ConversationType, language: string = 'Auto-Detect'): string => {
     const config = PROMPT_CONFIGS[type];
+    
+    let languageInstruction = "The audio may be in any language. Detect the language automatically.";
+    if (language !== 'Auto-Detect') {
+        languageInstruction = `The audio is predominantly in ${language}.`;
+    }
+
     return `
 You are an ${config.title}. Your task is to ${config.goal}
+
+${languageInstruction}
+
+**Crucial Instructions for Multi-Language Support:**
+1.  **Transcript:** Transcribe the conversation in the **original language detected** (e.g., if Hindi is spoken, write in Devanagari script; if Marathi, write in Marathi). Do not translate the transcript itself unless explicitly asked.
+2.  **Analysis:** Provide the analysis (AI Insights, Coaching Card, Vocal Delivery, Next Steps) **strictly in English**. This allows the user to understand the feedback regardless of the source language.
+3.  **Keywords:** If specific non-English terms are key to the analysis, cite them in the original language but explain them in English.
 
 Provide a complete analysis in a single JSON object. Do not include any explanatory text or markdown before or after the JSON.
 
@@ -57,7 +70,7 @@ The analysis must include the following components:
 1.  **transcript**: A verbatim transcript of the call. Each entry should have:
     *   'timestamp': The start time in seconds (e.g., 5.2).
     *   'speaker': 'A' for the ${config.speakerA}, 'B' for the ${config.speakerB}.
-    *   'text': The transcribed text.
+    *   'text': The transcribed text in the original language.
 
 2.  **sentimentData**: An analysis of the sentiment for both speakers over time. Provide data points at regular intervals (e.g., every 15-30 seconds). Each data point should have:
     *   'timestamp': The time in seconds.

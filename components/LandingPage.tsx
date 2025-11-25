@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { FileUpload } from './FileUpload';
 import { ConversationTypeSelector } from './ConversationTypeSelector';
@@ -13,6 +14,7 @@ import { HowItWorks } from './HowItWorks';
 import { KeywordGlossary } from './KeywordGlossary';
 import { ConversationType, Keyword } from '../types';
 import { KeywordInput } from './KeywordInput';
+import { LanguageSelector } from './LanguageSelector';
 
 interface LandingPageProps {
   onFileSelect: (file: File) => void;
@@ -21,6 +23,8 @@ interface LandingPageProps {
   keywords: Keyword[];
   onAddKeyword: (text: string) => void;
   onRemoveKeyword: (text: string) => void;
+  language: string;
+  onLanguageSelect: (lang: string) => void;
   onTrySample: () => void;
   disabled: boolean;
   error: string | null;
@@ -70,7 +74,7 @@ const features = [
 ];
 
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, onConversationTypeSelect, conversationType, keywords, onAddKeyword, onRemoveKeyword, onTrySample, disabled, error }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, onConversationTypeSelect, conversationType, keywords, onAddKeyword, onRemoveKeyword, language, onLanguageSelect, onTrySample, disabled, error }) => {
   return (
     <div className="animate-fade-in">
       <div className="text-center">
@@ -97,6 +101,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onFileSelect, onConver
                         onAddKeyword={onAddKeyword}
                         onRemoveKeyword={onRemoveKeyword}
                     />
+                </div>
+                <div className="animate-fade-in mb-8">
+                   <LanguageSelector 
+                        selectedLanguage={language} 
+                        onSelect={onLanguageSelect} 
+                        disabled={disabled}
+                   />
                 </div>
                 <div className="animate-fade-in">
                   <FileUpload onFileSelect={onFileSelect} disabled={disabled} />

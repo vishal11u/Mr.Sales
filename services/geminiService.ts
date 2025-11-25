@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Part, Type } from "@google/genai";
 import { ANALYSIS_SCHEMA, getAnalysisPrompt } from '../utils/analysisUtils';
 import { ConversationType } from "../types";
@@ -21,6 +22,7 @@ const fileToGenerativePart = async (file: File): Promise<Part> => {
 export const analyzeAudioStream = async (
     audioFile: File,
     conversationType: ConversationType,
+    language: string,
     onProgress: (text: string) => void
 ): Promise<string> => {
     try {
@@ -29,11 +31,11 @@ export const analyzeAudioStream = async (
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         onProgress('Preparing audio file for analysis...');
         const audioPart = await fileToGenerativePart(audioFile);
-        const analysisPrompt = getAnalysisPrompt(conversationType);
+        const analysisPrompt = getAnalysisPrompt(conversationType, language);
 
         const contents = { parts: [audioPart, { text: analysisPrompt }] };
 
-        onProgress('Starting analysis... This may take a few moments as the model processes the audio.');
+        onProgress(`Starting analysis (${language === 'Auto-Detect' ? 'detecting language' : language})... This may take a few moments.`);
         
         // FIX: Use gemini-2.5-pro for complex text tasks
         const responseStream = await ai.models.generateContentStream({
