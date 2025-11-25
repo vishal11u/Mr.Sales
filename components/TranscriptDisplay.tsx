@@ -73,7 +73,7 @@ export const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript
                       {new Date(entry.timestamp * 1000).toISOString().substr(14, 5)}
                   </span>
               </div>
-              <p className="text-sm whitespace-pre-wrap leading-relaxed break-words">
+              <p className="text-sm whitespace-pre-wrap leading-relaxed break-words" dir="auto">
                   {entry.text}
               </p>
             </div>

@@ -1,30 +1,29 @@
-
 import React, { useState } from 'react';
 import { MenuIcon } from './icons/MenuIcon';
 import { XIcon } from './icons/XIcon';
-import { View, Theme } from '../App';
+import { Theme } from '../App';
 import { ThemeToggle } from './ThemeToggle';
 import { GitHubIcon } from './icons/GitHubIcon';
 import { ClarityAILogo } from './icons/ClarityAILogo';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
-    onHomeClick: () => void;
-    onNavClick: (view: View) => void;
     theme: Theme;
     setTheme: (theme: Theme) => void;
 }
 
-const navLinks: { view: View, label: string }[] = [
-    { view: 'privacy', label: 'Privacy' },
-    { view: 'terms', label: 'Terms' },
-    { view: 'contact', label: 'Contact' },
+const navLinks: { path: string, label: string }[] = [
+    { path: '/privacy', label: 'Privacy' },
+    { path: '/terms', label: 'Terms' },
+    { path: '/contact', label: 'Contact' },
 ];
 
-export const Header: React.FC<HeaderProps> = ({ onHomeClick, onNavClick, theme, setTheme }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, setTheme }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const navigate = useNavigate();
 
-    const handleLinkClick = (view: View) => {
-        onNavClick(view);
+    const handleLinkClick = (path: string) => {
+        navigate(path);
         setIsMenuOpen(false);
     }
 
@@ -37,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ onHomeClick, onNavClick, theme, 
                     <div className="flex items-center justify-between h-16">
                         <button 
                             className="flex items-center"
-                            onClick={onHomeClick}
+                            onClick={() => navigate('/')}
                             title="Start Over"
                         >
                             <ClarityAILogo className="w-8 h-8 text-brand-primary dark:text-dark-brand-primary" />
@@ -49,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({ onHomeClick, onNavClick, theme, 
                         <div className="flex items-center space-x-2 sm:space-x-4">
                             <nav className="hidden md:flex items-center space-x-6">
                                 {navLinks.map(link => (
-                                    <button key={link.view} onClick={() => handleLinkClick(link.view)} className="text-sm font-medium text-content-200 dark:text-dark-content-200 hover:text-brand-accent dark:hover:text-dark-brand-accent transition-colors">
+                                    <button key={link.path} onClick={() => handleLinkClick(link.path)} className="text-sm font-medium text-content-200 dark:text-dark-content-200 hover:text-brand-accent dark:hover:text-dark-brand-accent transition-colors">
                                         {link.label}
                                     </button>
                                 ))}
@@ -90,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({ onHomeClick, onNavClick, theme, 
                         </div>
                         <nav className="flex flex-col">
                            {navLinks.map(link => (
-                                <button key={link.view} onClick={() => handleLinkClick(link.view)} className="text-lg text-left py-3 text-content-200 dark:text-dark-content-200 hover:text-brand-accent dark:hover:text-dark-brand-accent transition-colors w-full">
+                                <button key={link.path} onClick={() => handleLinkClick(link.path)} className="text-lg text-left py-3 text-content-200 dark:text-dark-content-200 hover:text-brand-accent dark:hover:text-dark-brand-accent transition-colors w-full">
                                    {link.label}
                                </button>
                            ))}

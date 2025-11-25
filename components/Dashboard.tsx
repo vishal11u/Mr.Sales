@@ -13,10 +13,11 @@ import { ExportButton } from './ExportButton';
 import { DashboardSettings } from './DashboardSettings';
 import { ShareButton } from './ShareButton';
 import { UploadIcon } from './icons/UploadIcon';
+import { InfoIcon } from './icons/InfoIcon';
 
 interface DashboardProps {
   result: AnalysisResult;
-  audioUrl: string;
+  audioUrl: string | null;
   onReset: () => void;
   conversationType: ConversationType;
 }
@@ -89,11 +90,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ result, audioUrl, onReset,
       </div>
 
       {layout.audioPlayer && (
-        <AudioPlayer 
-          src={audioUrl} 
-          onTimeUpdate={setCurrentTime}
-          onDurationChange={setDuration}
-        />
+        audioUrl ? (
+            <AudioPlayer 
+              src={audioUrl} 
+              onTimeUpdate={setCurrentTime}
+              onDurationChange={setDuration}
+            />
+        ) : (
+             <div className="bg-base-200 dark:bg-dark-base-200 rounded-lg shadow-lg p-6 border border-base-300 dark:border-dark-base-300 flex items-center justify-center text-center">
+                 <div className="text-content-200 dark:text-dark-content-200 flex flex-col items-center">
+                    <InfoIcon className="w-8 h-8 mb-2 opacity-50"/>
+                    <p className="font-semibold">Audio Playback Unavailable</p>
+                    <p className="text-sm mt-1">
+                        The session was restored from storage. To listen to the audio again, please start a new analysis and re-upload the file.
+                    </p>
+                 </div>
+             </div>
+        )
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

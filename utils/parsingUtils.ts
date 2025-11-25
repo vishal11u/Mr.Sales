@@ -2,8 +2,7 @@ import { TranscriptEntry } from '../types';
 
 /**
  * Parses a timestamp string (e.g., "5.2" or "00:05.2") into seconds.
- * @param timestampStr The timestamp string from the transcript.
- * @returns The total number of seconds.
+ * Used for string-based parsing fallback.
  */
 const parseTimestamp = (timestampStr: string): number => {
   const cleanedStr = timestampStr.trim();
@@ -19,23 +18,14 @@ const parseTimestamp = (timestampStr: string): number => {
 };
 
 /**
- * Parses transcript text in the format: `[timestamp] Speaker A/B: text`
- * and handles multi-line text for a single speaker entry.
- * It's designed to be robust against extra whitespace, markdown, and varied timestamp formats.
- * @param text The full transcript string from the model.
- * @returns An array of TranscriptEntry objects.
+ * Legacy string parser using Regex.
+ * Handles text format: `[timestamp] Speaker A/B: text`
  */
-export const parseTranscript = (text: string): TranscriptEntry[] => {
-  // Clean potential markdown code blocks that the model might add.
+const parseTranscriptString = (text: string): TranscriptEntry[] => {
   const cleanedText = text.replace(/```/g, '').trim();
-
   const entries: TranscriptEntry[] = [];
   const lines = cleanedText.split('\n');
-
-  // Regex to identify a new speaker entry.
-  // It's flexible with timestamps (e.g., [5.2], [00:05.2], [ 5 ]) and speaker labels.
   const entryStartRegex = /\[\s*([\d:.]+)\s*]\s+Speaker\s+([AB]):\s*(.*)/i;
-
   let currentEntry: TranscriptEntry | null = null;
 
   for (const line of lines) {
@@ -45,40 +35,75 @@ export const parseTranscript = (text: string): TranscriptEntry[] => {
     const match = trimmedLine.match(entryStartRegex);
 
     if (match) {
-      if (currentEntry) {
-        entries.push(currentEntry);
-      }
+      if (currentEntry) entries.push(currentEntry);
 
       const [, timestampStr, speaker, text] = match;
       const timestamp = parseTimestamp(timestampStr);
 
-      // Guard against NaN timestamps which can break the app
       if (!isNaN(timestamp)) {
         currentEntry = {
           timestamp: timestamp,
           speaker: speaker.toUpperCase() as 'A' | 'B',
           text: text.trim(),
         };
-      } else {
-        // If timestamp is invalid, we treat this line as a continuation of previous text
-        // to avoid losing content, in case of a formatting glitch from the model.
-        if (currentEntry) {
-          currentEntry.text += `\n${trimmedLine}`;
-        }
+      } else if (currentEntry) {
+        currentEntry.text += `\n${trimmedLine}`;
       }
     } else if (currentEntry) {
-      // This is a continuation of the previous speaker's text.
       currentEntry.text += `\n${trimmedLine}`;
     }
-    // If a line doesn't match and there's no currentEntry, we ignore it.
-    // This effectively skips any preamble like "Here is the transcript:".
   }
 
-  // Add the last entry if it exists
-  if (currentEntry) {
-    entries.push(currentEntry);
-  }
-
-  // Final trim on all text entries
+  if (currentEntry) entries.push(currentEntry);
   return entries.map((entry) => ({ ...entry, text: entry.text.trim() }));
+};
+
+/**
+ * Parses transcript data from either a raw string or a structured JSON array.
+ * @param input The raw transcript data (string or array).
+ * @returns An array of TranscriptEntry objects.
+ */
+export const parseTranscript = (input: any): TranscriptEntry[] => {
+  // 1. Handle Structured JSON Array (Preferred)
+  if (Array.isArray(input)) {
+    return input.map((item: any) => {
+      // Robust Speaker Normalization
+      let speaker: 'A' | 'B' = 'A'; // Default to A
+      const rawSpeaker = String(item.speaker || '').toUpperCase().trim();
+      
+      // Map common labels to 'B' (Agent/Salesperson/Candidate)
+      if (
+        rawSpeaker === 'B' || 
+        rawSpeaker.includes('SALES') || 
+        rawSpeaker.includes('AGENT') || 
+        rawSpeaker.includes('CANDIDATE') || 
+        rawSpeaker.includes('PRESENTER')
+      ) {
+        speaker = 'B';
+      }
+
+      // Robust Timestamp Normalization
+      let timestamp = 0;
+      if (typeof item.timestamp === 'number') {
+        timestamp = item.timestamp;
+      } else if (typeof item.timestamp === 'string') {
+        timestamp = parseTimestamp(item.timestamp);
+      }
+      if (isNaN(timestamp)) timestamp = 0;
+
+      return {
+        timestamp,
+        speaker,
+        text: String(item.text || '').trim(),
+      };
+    });
+  }
+
+  // 2. Handle String Input (Fallback)
+  if (typeof input === 'string') {
+    return parseTranscriptString(input);
+  }
+
+  // 3. Fallback for invalid input
+  return [];
 };
